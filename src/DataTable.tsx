@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import * as duckdb from "@duckdb/duckdb-wasm";
 import { Chart, registerables } from "chart.js";
 import VictoryChart from "./VictoryChart";
+import InfoWithChartAnalysis from "./InfoWithChartAnalysis";
 import InfoAnalysis from "./InfoAnalysis";
 
 Chart.register(...registerables);
@@ -76,8 +77,6 @@ const App: React.FC = () => {
       count(*) as count
       FROM base_query
     `);
-
-    console.log("columsCount", columsCount);
 
     const columns: string[] = columnData.schema.fields.map(
       (field: { name: string }) => field.name
@@ -172,6 +171,7 @@ const App: React.FC = () => {
           <div className="m-1">
             <div
               key={idx}
+              onClick={() => openInfo(stats.label)}
               className={`grid grid-cols grid-flow-col h-5 text-sm ${
                 stats.type == "BIGINT"
                   ? "hover:bg-[#f4ebf7]"
@@ -191,10 +191,7 @@ const App: React.FC = () => {
                 {stats.type == "BIGINT" ? (
                   <VictoryChart data={stats.values} />
                 ) : (
-                  <button
-                    className="border-l border-blue-500 w-full"
-                    onClick={() => openInfo(stats.label)}
-                  >
+                  <button className="border-l border-blue-500 w-full">
                     <div className="w-full font-semibold p-0 text-right bg-[#f0f9ff] transition duration-300 border-2 border-transparent hover:border-blue-600">
                       {countUnique(stats.values)}
                     </div>
@@ -203,11 +200,15 @@ const App: React.FC = () => {
               </div>
               <div>...</div>
             </div>
-            {itemSelected == stats.label && (
-              <div className="px-3">
-                <InfoAnalysis data={stats.value} />
-              </div>
-            )}
+            <div className="px-3">
+              {itemSelected && itemSelected === stats.label ? (
+                stats.type === "BIGINT" ? (
+                  <InfoWithChartAnalysis data={stats} />
+                ) : (
+                  <InfoAnalysis data={stats.values} />
+                )
+              ) : null}
+            </div>
           </div>
         ))
       ) : (

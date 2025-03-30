@@ -7,12 +7,14 @@ interface VictoryChartComponentProps {
   data: string[]; // Input data as an array of strings
   bins?: number; // Number of bins (optional, will be auto-calculated if not provided)
   style?: { data: { fill: string; stroke: string; strokeWidth: number; width?: number } }; // Custom styles (optional)
+  heightChart?: number;
 }
 
 const VictoryChartComponent: React.FC<VictoryChartComponentProps> = ({
   data,
   bins,
-  style
+  style,
+  heightChart
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [chartWidth, setChartWidth] = useState<number | undefined>(undefined);
@@ -107,7 +109,7 @@ const VictoryChartComponent: React.FC<VictoryChartComponentProps> = ({
         domainPadding={0} // Keep domainPadding small to make bars close to each other
         domain={{ y: [0, maxFrequency * 0.5] }} // Limit the y-axis to reduce bar height
         width={chartWidth} // Use width from ResizeObserver
-        height={20} // Set the height directly for VictoryChart
+        height={heightChart || 20} // Set the height directly for VictoryChart
       >
         {/* VictoryHistogram to render the histogram */}
         <VictoryHistogram
